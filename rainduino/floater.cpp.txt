@@ -1,0 +1,18 @@
+
+#include <arduino.h>
+
+const int READ_PIN = 3;
+
+void setup() {
+    pinMode(READ_PIN, INPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+   	int reading = digitalRead(READ_PIN); 
+	
+	Serial.println(reading);
+
+	delay(500);
+}
+ 

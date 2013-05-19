@@ -52,3 +52,9 @@ nosetests.xml
 # SQLite databases
 *.db
 
+
+# Node.js 
+node_modules
+npm-debug.log
+
+

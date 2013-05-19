@@ -1,3 +1,11 @@
 {
 	"db": "readings.db"
+	"sensors": [
+		[1, "Panel Light Level"],
+		[2, "Bed Light Level"],
+		[3, "Humidity"],
+		[4, "Temperature"],
+		[5, "Soil Moisture"],
+		[6, "Water Level"]
+	]
 }
