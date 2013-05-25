@@ -2,8 +2,13 @@
 import sqlite3
 import configuration
 import time
+import os
 
 
+def connection():
+    base_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    config = configuration.read()
+    return sqlite3.connect(os.path.join(base_path, config['db']))
 
 class RollUp():
 
@@ -18,9 +23,11 @@ class RollUp():
         if not since:
             since = int(time.time())
 
-        config = configuration.read()
-        conn = sqlite3.connect(config['db'])
+        conn = connection()
         c = conn.cursor()
+        
+        c.execute("delete from reading_rollup_%(level)s where unix_epoch >= ?" % locals(), (since, ))
+
         level_idx = self.levels.index(level)
         levels_list = ", ".join(self.levels[0:level_idx + 1])
 
@@ -43,14 +50,16 @@ class RollUp():
 
         query = """
             insert into reading_rollup_%(level)s (value, sensor_id, unix_epoch, %(levels_list)s)
-            values
             select avg(value), sensor_id, strftime('%%s', %(dt)s), %(levels_list)s
             from reading
-            where unix_epoch > ?
+            where unix_epoch >= ?
             group by sensor_id, %(levels_list)s
         """ % locals()
-
-        print query
+        print "querying"
+        c.execute(query, (since, ))
+        
+        conn.commit()
+        conn.close()
 
 if __name__ == '__main__':
     RollUp().rollup(level='day')

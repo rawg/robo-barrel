@@ -1,37 +1,33 @@
 
 
-import sqlite3
-import configuration
+import dao
+import sys
+import re
+import datetime
 import time
 
-class RollUp():
-
-    levels = ['year', 'month', 'day', 'hour']
-
-    def __init__(self):
-        pass
-
-    def rollup(self, since = None, level = 'year'):
-        if level not in self.levels:
-            raise Exception("Invalid level")
-        if not since:
-            since = int(time.time())
-
-        config = configuration.read()
-        conn = sqlite3.connect(config['db'])
-        c = conn.cursor()
-
-        levels_list = ", ".join(self.levels[0:self.levels.index(level) + 1])
-
-        query = """
-            insert into reading_rollup_%(level)s
-            select avg(reading), sensor, %(levels_list)s
-            from reading
-            where effective > ?
-            group by sensor, %(levels_list)s
-        """ % locals()
-
-        print query
-
 if __name__ == '__main__':
-    RollUp().rollup()
+
+    #RollUp().rollup()
+    terms = []
+    for term in sys.argv[1:]:
+        terms += re.split('[\-\:\/]', term)
+
+    ints = []
+    for term in terms:
+        ints.append(int(term))
+
+    idx = len(ints) - 1
+    if idx >= len(dao.RollUp.levels):
+        idx = len(dao.RollUp.levels) - 1
+
+    level = dao.RollUp.levels[idx]
+    ints += [1, 1, 1, 1]
+    terms = ints[:4]
+    
+    unix_epoch = int(time.mktime(datetime.datetime(terms[0], terms[1], terms[2], terms[3]).timetuple()))
+
+    print(unix_epoch, terms, level)
+    dao.RollUp().rollup(since=unix_epoch, level=level)
+
+
