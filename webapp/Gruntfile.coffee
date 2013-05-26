@@ -37,8 +37,17 @@ module.exports = (grunt) ->
     
         testdata: ->
             done = this.async()
-            run "python service/create_test_data.py", (status, stdout, stderr) -> done not status > 0
+            success = true
+            run "python service/create_test_data.py", (status) -> 
+                success = success and not status > 0
+                run "python service/rollup.py 2012 10", (status) -> 
+                    success = success and not status > 0
+                    run "python service/rollup.py 2012 10 1", (status) -> 
+                        success = success and not status > 0
+                        run "python service/rollup.py 2012 10 1 0", (status) -> 
+                            done success and not status > 0
 
+    # Build tasks for Arduino code
     arduino = 
         defines: ->
             done = this.async()
@@ -89,3 +98,4 @@ module.exports = (grunt) ->
     grunt.registerTask 'schema', 'Initialize database schema', database.schema
     grunt.registerTask 'testdata', 'Generate test data', database.testdata
     grunt.registerTask 'defines', 'Generate defines for sensor IDs', arduino.defines
+    grunt.registerTask 'init', 'Initialize everything', ['defines', 'schema', 'testdata']
