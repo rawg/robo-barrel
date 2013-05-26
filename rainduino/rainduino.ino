@@ -1,4 +1,6 @@
 
+// vim: syntax=cpp
+
 #include <arduino.h>
 #include <DHT.h>
 #include <SD.h>
@@ -13,8 +15,8 @@ const int TEMP_PIN = 2;
 const int SD_CS_PIN = 4;
 const int BED_LIGHT_PIN = A1;
 const int PANEL_LIGHT_PIN = A2;
-const int MOISTURE_VOLTAGE1 = 8;
-const int MOISTURE_VOLTAGE2 = 9;
+const int MOISTURE_VOLTAGE1 = 8; // 8 -> 100o -> sensor
+const int MOISTURE_VOLTAGE2 = 9; // 9 -> 100ko -> A0 AND sensor
 const int MOISTURE_PIN = A0;
 const int PUMP_PIN = 5;
 
@@ -36,13 +38,16 @@ DHT dht(TEMP_PIN, DHTTYPE);
  * Operational variables
  */
 bool isPumpRunning = false;
+bool isSdConnected = true;
 int sessionId = 0;
 unsigned long lastReading = 0;
+String readingsFile = "data00.txt";
+
+// Best guess
+int moistureMin = 900;
+int moistureMax = 1000;
 
 void setup() {
-	// initialize pins
-	// read trigger values from EEPROM
-	
 	// Initialize pins
     pinMode(FLOATING_PIN, INPUT);
 	pinMode(SD_CS_PIN, OUTPUT);
@@ -60,16 +65,37 @@ void setup() {
 	dht.begin();
 
 	// Initialize SD card
-	SD.begin(SD_CS_PIN);
+	if (!SD.begin(SD_CS_PIN)) {
+		isSdConnected = false;
+	}
+
+	// 
+	if (isSdConnected) {
+		File file = SD.open("sessions.txt", FILE_READ);
+		if (file) {
+			String data = "";
+			while (file.isAvailable()) {
+				data += file.read();
+			}
+			sessionId = data.toInt();
+			sessionId++;
+			file.close();
+
+			file = SD.open("sessions.txt", FILE_WRITE);
+			file.println(sessionId);
+			file.close();
+
+			readingsFile = "data";
+			readingsFile += sessionId;
+			readingsFile += ".txt";
+		}
+	}
+
+
 
 }
 
 void loop() {
-	// take readings
-	// read serial
-	//   change settings if needed
-	// write readings
-
 	// 1 at top, 0 at bottom
 	int water = digitalRead(FLOATING_PIN);
 	
@@ -101,8 +127,9 @@ void loop() {
 		lines[3] += buildLine(SENSOR_BED_HUMIDITY, humidity);
 		lines[4] += buildLine(SENSOR_BED_TEMPERATURE, temperature);
 		lines[5] += buildLine(SENSOR_WATER_LEVEL, water);
+		lines[6] += buildLine(SENSOR_PUMP_RUNNING, isPumpRunning);
 
-		File file = SD.open("readings.txt", FILE_WRITE);
+		File file = SD.open(readingsFile, FILE_WRITE);
 		
 		for (int i = 0; i < 6; i++) {
 			if (file) {
@@ -115,7 +142,8 @@ void loop() {
 		if (file) {
 			file.close();
 		}
-		
+	
+		// Remember time of last reading
 		lastReading = millis();
 	}
 
