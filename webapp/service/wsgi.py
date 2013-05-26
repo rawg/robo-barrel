@@ -1,37 +1,59 @@
 
-from bottle import Bottle, route, abort, run, request, response, error, static_file
+#from bottle import Bottle, route, abort, run, request, response, error, static_file
+import bottle
+import configuration
+import dao
+import os
 
-application = app = Bottle()
-
+application = app = bottle.Bottle()
+conf = configuration.read()
+static_path = os.path.join(conf['base_path'], '/static/')
 
 @app.route('')
 @app.route("/")
+@app.route("/index.html")
 def index():
-    return static_file('index.html', root=os.path.dirname(__file__))
+    return bottle.static_file('index.html', root=static_path)
 
-@app.route("/nls")
-def parse_nls():
-    """Parse NLS input"""
-    
-    query = request.query['query'] or False
-    if query is False:
-        abort(500, "Missing query parameter")
-    
-    context = request.query.get('context', parser.Context.any)
-    try:
-        context = int(context)
-    except ValueError:
-        context = parser.Context.any
+@app.route("/js/<filename:path>")
+def js(filename):
+    return bottle.static_file(filename, root=os.path.join(static_path, '/js/'))
 
-    response.add_header('Access-Control-Allow-Origin', '*')
+@app.route("/css/<filename:path>")
+def css(filename):
+    return bottle.static_file(filename, root=os.path.join(static_path, '/css/'))
 
-    return parser.parse(query, context)
+@app.route("/img/<filename:path>")
+def img(filename):
+    return bottle.static_file(filename, root=os.path.join(static_path, '/img/'))
+
+@app.route("/data/hourly/<sensor:int>")
+@app.route("/data/hourly/<sensor:int>/<start_date:int>")
+@app.route("/data/hourly/<sensor:int>/<start_date:int>/<end_date:int>")
+def hourly_data(sensor, start_date=None, end_date=None):
+    return {"data": dao.RollUp.fetch('hour', sensor, start_date, end_date)}
+
+@app.route("/data/daily/<sensor:int>")
+@app.route("/data/daily/<sensor:int>/<start_date:int>")
+@app.route("/data/daily/<sensor:int>/<start_date:int>/<end_date:int>")
+def daily_data(sensor, start_date=None, end_date=None):
+    return {"data": dao.RollUp.fetch('day', sensor, start_date, end_date)}
+
+@app.route("/data/monthly/<sensor:int>")
+@app.route("/data/monthly/<sensor:int>/<start_date:int>")
+@app.route("/data/monthly/<sensor:int>/<start_date:int>/<end_date:int>")
+def monthly_data(sensor, start_date=None, end_date=None):
+    return {"data": dao.RollUp.fetch('month', sensor, start_date, end_date)}
+
+@app.route("/data/sensors")
+def sensors():
+    return {"sensors": [(sensor[0], sensor[1]) for sensor in conf['sensors'] ]}
 
 @app.error(404)
 def error404(error):
     return "Method not available"
 
 if __name__ == '__main__':
-    run(app, host='localhost', port=8000, reloader=True)
+    bottle.run(app, host='localhost', port=8000, reloader=True)
 
 
