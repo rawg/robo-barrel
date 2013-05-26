@@ -9,6 +9,9 @@ create table if not exists reading (
 	unix_epoch integer, -- date unix_epoch
 	sensor_id integer, -- FK: sensor.id
 	value real,
+	
+	session_id integer, -- Arduino session ID
+	millis integer, -- Time of reading in Arduino session
 
 	year integer,
 	month integer,
