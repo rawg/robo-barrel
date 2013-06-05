@@ -7,7 +7,7 @@ import os
 
 application = app = bottle.Bottle()
 conf = configuration.read()
-static_path = os.path.join(conf['base_path'], '/static/')
+static_path = os.path.join(conf['base_path'], 'ui/static/')
 
 @app.route('')
 @app.route("/")
@@ -17,15 +17,29 @@ def index():
 
 @app.route("/js/<filename:path>")
 def js(filename):
-    return bottle.static_file(filename, root=os.path.join(static_path, '/js/'))
+    return bottle.static_file(filename, root=os.path.join(static_path, 'js'))
 
 @app.route("/css/<filename:path>")
 def css(filename):
-    return bottle.static_file(filename, root=os.path.join(static_path, '/css/'))
+    return bottle.static_file(filename, root=os.path.join(static_path, 'css'))
 
 @app.route("/img/<filename:path>")
 def img(filename):
-    return bottle.static_file(filename, root=os.path.join(static_path, '/img/'))
+    return bottle.static_file(filename, root=os.path.join(static_path, 'img'))
+
+@app.route("/favicon.ico")
+def favicon():
+    return bottle.static_file("favicon.ico", root=os.path.join(static_path, 'img'))
+
+@app.route("/data/current/<sensor:int>")
+def current(sensor):
+    return dao.get_latest(sensor)
+
+@app.route("/data/recent/<sensor:int>")
+@app.route("/data/recent/<sensor:int>/<start_date:int>")
+@app.route("/data/recent/<sensor:int>/<start_date:int>/<end_date:int>")
+def recent_data(sensor, start_date=None, end_date=None):
+    return {"data": dao.get_recent(sensor, start_date, end_date)}
 
 @app.route("/data/hourly/<sensor:int>")
 @app.route("/data/hourly/<sensor:int>/<start_date:int>")
@@ -47,7 +61,7 @@ def monthly_data(sensor, start_date=None, end_date=None):
 
 @app.route("/data/sensors")
 def sensors():
-    return {"sensors": [(sensor[0], sensor[1]) for sensor in conf['sensors'] ]}
+    return {"sensors": [{"id": sensor[0], "description": sensor[1], "short": sensor[3]} for sensor in conf['sensors'] ]}
 
 @app.error(404)
 def error404(error):

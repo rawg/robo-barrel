@@ -27,6 +27,28 @@ def select(query, values=None, debug=False):
     result = c.execute(query, values)
     return [row for row in result]
 
+def get_latest(sensor):
+    data = select("select unix_epoch, value from reading where sensor_id = ? order by unix_epoch desc limit 1", (sensor, ))
+    if (data):
+        return {"unix_epoch": data[0][0], "value": data[0][1]}
+    else:
+        return {"value": None}
+
+def get_recent(sensor, start_date=None, end_date=None):
+    if not end_date:
+        end_date = int(time.mktime(datetime.datetime.now().timetuple()))
+    if not start_date:
+        start_date = int(time.mktime((datetime.datetime.now() - datetime.timedelta(minutes=120)).timetuple()))
+    
+    query = """
+        select unix_epoch, value 
+        from reading 
+        where sensor_id = ?
+        and unix_epoch >= ?
+        and unix_epoch <= ?
+    """
+    
+    return select(query, (sensor, start_date, end_date))
 
 class Reading():
     def __init__(self):
@@ -103,8 +125,8 @@ class RollUp():
         dt += ")"
 
         query = """
-            insert into reading_rollup_%(level)s (value, sensor_id, unix_epoch, %(levels_list)s)
-            select avg(value), sensor_id, strftime('%%s', %(dt)s), %(levels_list)s
+            insert into reading_rollup_%(level)s (avg_value, max_value, min_value, sum_value, sensor_id, unix_epoch, %(levels_list)s)
+            select avg(value), max(value), min(value), sum(value), sensor_id, strftime('%%s', %(dt)s), %(levels_list)s
             from reading
             where unix_epoch >= ?
             group by sensor_id, %(levels_list)s
@@ -130,7 +152,7 @@ class RollUp():
         fields = ", ".join(RollUp.levels[0:idx + 1])
         print fields
         query = """
-            select value, %(fields)s
+            select avg_value, max_value, min_value, sum_value, unix_epoch, %(fields)s
             from reading_rollup_%(level)s
             where sensor_id = ?
             and unix_epoch >= ?

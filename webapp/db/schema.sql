@@ -34,7 +34,10 @@ create table if not exists latest_reading (
 -- roll ups
 create table if not exists reading_rollup_hour (
 	sensor_id integer,
-	value real,
+	avg_value real,
+	max_value real,
+	min_value real,
+	sum_value real,
 	year integer,
 	month integer,
 	day integer,
@@ -45,7 +48,10 @@ create table if not exists reading_rollup_hour (
 
 create table if not exists reading_rollup_day (
 	sensor_id integer,
-	value real,
+	avg_value real,
+	max_value real,
+	min_value real,
+	sum_value real,
 	year integer,
 	month integer,
 	day integer,
@@ -55,7 +61,10 @@ create table if not exists reading_rollup_day (
 
 create table if not exists reading_rollup_month (
 	sensor_id integer,
-	value real,
+	avg_value real,
+	max_value real,
+	min_value real,
+	sum_value real,
 	year integer,
 	month integer,
 	unix_epoch integer,
