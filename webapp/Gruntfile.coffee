@@ -47,8 +47,7 @@ module.exports = (grunt) ->
                         run "python service/rollup.py 2012 10 1 0", (status) -> 
                             done success and not status > 0
 
-    # Build tasks for Arduino code
-    arduino = 
+    sensors = 
         defines: ->
             done = this.async()
             
@@ -65,6 +64,25 @@ module.exports = (grunt) ->
                 else
                     done true
     
+        json: ->
+            done = this.async()
+            txt = "sensors = [\n"
+
+            for sensor in config.sensors
+                txt += "    {\n"
+                txt += "        id: #{sensor[0]}\n"
+                txt += "        short: \"#{sensor[3]}\"\n"
+                txt += "        description: \"#{sensor[1]}\"\n"
+                txt += "    },\n"
+            
+            txt += "]"
+            
+            fs.writeFile path.join(__dirname, 'ui/src/coffee/sensors.coffee'), txt, (err, data) ->
+                if err
+                    done false
+                else
+                    done true
+
     # Growl errors and warnings
     ["warn", "fatal"].forEach (level) ->
         grunt.util.hooker.hook grunt.fail, level, (opt) ->
@@ -75,6 +93,8 @@ module.exports = (grunt) ->
             compile:
                 files:
                     'ui/static/js/app.js': 'ui/src/coffee/**/*.coffee'
+                options:
+                    join: true
 
         stylus:
             compile:
@@ -89,13 +109,18 @@ module.exports = (grunt) ->
                 src: ['**/*.jade']
                 dest: 'ui/static/'
                 ext: '.html'
+                options:
+                    pretty: true
+                    data: config.jade
 
         watch:
             files: ['ui/src/coffee/**/*.coffee', 'ui/src/stylus/**/*.styl', 'ui/src/jade/**/*.jade']
             tasks: ['coffee:compile', 'stylus:compile', 'jade:compile']
 
-    grunt.registerTask 'default', ['coffee', 'stylus', 'jade']
     grunt.registerTask 'schema', 'Initialize database schema', database.schema
     grunt.registerTask 'testdata', 'Generate test data', database.testdata
-    grunt.registerTask 'defines', 'Generate defines for sensor IDs', arduino.defines
-    grunt.registerTask 'init', 'Initialize everything', ['defines', 'schema', 'testdata']
+    grunt.registerTask 'defines', 'Generate defines for sensor IDs', sensors.defines
+    grunt.registerTask 'sensorjson', 'Generate list of sensors for Coffee Script', sensors.json
+    grunt.registerTask 'sensors', ['sensorjson', 'defines']
+    grunt.registerTask 'init', 'Initialize everything', ['sensors', 'schema', 'testdata']
+    grunt.registerTask 'default', ['coffee', 'stylus', 'jade']

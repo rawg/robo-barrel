@@ -8,12 +8,15 @@
 		"stopbits": 1
 	},
 	"sensors": [
-		[1, "Panel Light Level", "PNL_LIGHT_LVL"],
-		[2, "Bed Light Level", "BED_LIGHT_LVL"],
-		[3, "Humidity", "BED_HUMIDITY"],
-		[4, "Temperature", "BED_TEMPERATURE"],
-		[5, "Soil Moisture", "BED_MOISTURE"],
-		[6, "Water Level", "WATER_LEVEL"],
-		[7, "Pump Running", "PUMP_RUNNING"]
-	]
+		[1, "Panel Light Level", "PNL_LIGHT_LVL", "PanelLight"],
+		[2, "Bed Light Level", "BED_LIGHT_LVL", "BedLight"],
+		[3, "Humidity", "BED_HUMIDITY", "Humidity"],
+		[4, "Temperature", "BED_TEMPERATURE", "Temperature"],
+		[5, "Soil Moisture", "BED_MOISTURE", "Moisture"],
+		[6, "Water Level", "WATER_LEVEL", "Water"],
+		[7, "Pump Running", "PUMP_RUNNING", "Pumping"]
+	],
+	"jade": {
+		"title": "Fisher Rainduino Monitor"
+	}
 }
