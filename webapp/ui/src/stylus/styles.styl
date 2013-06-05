@@ -1,4 +1,84 @@
 
-body
-	font 12px "Helvetica Neue"
+fonts = "Merriweather Sans", "Helvetica"
 
+// Pallette (from http://www.colourlovers.com/palette/167272/Sunny_Duck)
+green = #17A768
+orange = #F1601D
+yellow = #F1AD1D
+grey = #E7E0D2
+beige = #BBAE93
+
+border-radius()
+	-webkit-border-radius arguments
+	-moz-border-radius arguments
+	border-radius arguments
+
+drop-shadow()
+	-moz-box-shadow arguments
+	-webkit-box-shadow arguments
+	box-shadow arguments
+
+text-shadow()
+	text-shadow arguments
+
+body
+	margin 2em
+	font 12px fonts 
+	background beige
+
+h1
+	color grey
+	text-shadow(4px 4px 2px #666)
+
+svg.sparkline
+	display inline-block
+	width 100px
+	height 50px
+	
+	path 
+		fill none
+		stroke #444
+
+svg.chart
+	width 280px
+	height 160px
+
+div.info
+	background grey
+	border 1px solid grey
+	text-align center
+	drop-shadow(4px 4px 2px #666)
+	padding-top 0.5em
+	padding-bottom 0.5em
+	display table-cell
+	margin-bottom 1em
+
+	i
+		vertical-align baseline
+
+	h3
+		text-size 0.5em
+
+div.info.big
+	font-size 4em
+	border-radius(16px)
+		
+div.info.medium
+	font-size 2em
+	border-radius(10px)
+	i
+		font-size 4em
+
+div.info.small
+	font-size 1.2em
+	border-radius(6px)
+
+div.info.great
+	background green
+	border-color green
+	font-weight bold
+
+div.info.danger
+	background orange
+	border-color orange
+	font-weight bold

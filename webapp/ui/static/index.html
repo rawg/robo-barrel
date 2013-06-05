@@ -1,2 +1,96 @@
-<!DOCTYPE html><html lang="en"><head><!--title= pageTitle--></head><body><h1>Hello</h1><p>good bye
-</p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fisher Rainduino Monitor</title>
+    <meta name="viewport" content="width=device-width" initial-scale="1.0">
+    <link href="css/nv.d3.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" type="text/css">
+    <script src="js/jquery-2.0.1.min.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/nvd3/lib/d3.v2.min.js"></script>
+    <script src="js/nvd3/nv.d3.min.js"></script>
+    <script src="js/nvd3/utils.js"></script>
+    <script src="js/nvd3/models/sparkline.js"></script>
+    <script src="js/nvd3/models/line.js"></script>
+    <script src="js/app.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <h1>Fisher Rainduino Monitor</h1>
+    <div class="row">
+      <div id="Temperature" class="info big span4">
+        <div class="row">
+          <div class="span4">
+            <h3>Temperature</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2 text-right"><span class="value">0</span>&deg;</div>
+          <div class="span2">
+            <svg class="sparkline"></svg>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span4">
+            <svg class="chart"></svg>
+          </div>
+        </div>
+      </div>
+      <div id="Humidity" class="info big span4">
+        <div class="row">
+          <div class="span4">
+            <h3>Humidity</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2 text-right"><span class="value">0</span>%</div>
+          <div class="span2">
+            <svg class="sparkline"></svg>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span4">
+            <svg class="chart"></svg>
+          </div>
+        </div>
+      </div>
+      <div id="Moisture" class="info big span4">
+        <div class="row">
+          <div class="span4">
+            <h3>Soil Moisture</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span2 text-right"><span class="value">0</span>?</div>
+          <div class="span2">
+            <svg class="sparkline"></svg>
+          </div>
+        </div>
+        <div class="row">
+          <div class="span4">
+            <svg class="chart"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="info medium span12">
+        <div class="row">
+          <div id="Pumping" class="span12"><i></i><span>Pump is running</span></div>
+          <div id="Water" class="span12"><i></i><span>Enough water</span></div>
+        </div>
+        <div class="row">
+          <div class="span12">
+            <svg class="chart"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div id="PanelLight" class="info small span6"><span class="value">0</span></div>
+      <div id="BedLight" class="info small span6"><span class="value">0</span></div>
+    </div>
+  </body>
+</html>

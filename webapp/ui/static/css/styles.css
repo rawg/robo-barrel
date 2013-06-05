@@ -1,1 +1,14 @@
-body{font:12px "Helvetica Neue"}
+body{margin:2em;font:12px "Merriweather Sans","Helvetica";background:#bbae93}
+h1{color:#e7e0d2;text-shadow:4px 4px 2px #666}
+svg.sparkline{display:inline-block;width:100px;height:50px;}
+svg.sparkline path{fill:none;stroke:#444}
+svg.chart{width:280px;height:160px}
+div.info{background:#e7e0d2;border:1px solid #e7e0d2;text-align:center;-moz-box-shadow:4px 4px 2px #666;-webkit-box-shadow:4px 4px 2px #666;box-shadow:4px 4px 2px #666;padding-top:.5em;padding-bottom:.5em;display:table-cell;margin-bottom:1em;}
+div.info i{vertical-align:baseline}
+div.info h3{text-size:.5em}
+div.info.big{font-size:4em;-webkit-border-radius:16px;-moz-border-radius:16px;border-radius:16px}
+div.info.medium{font-size:2em;-webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px;}
+div.info.medium i{font-size:4em}
+div.info.small{font-size:1.2em;-webkit-border-radius:6px;-moz-border-radius:6px;border-radius:6px}
+div.info.great{background:#17a768;border-color:#17a768;font-weight:bold}
+div.info.danger{background:#f1601d;border-color:#f1601d;font-weight:bold}
